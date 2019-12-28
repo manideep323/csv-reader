@@ -1,0 +1,3 @@
+Date,Location,PSA Code,Total Sales
+20191120,10671,45,151.9
+20191120,10680,43,69.45
