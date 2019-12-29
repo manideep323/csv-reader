@@ -6,10 +6,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,6 +29,7 @@ public class App {
 	static File inputFile = new File(appPath + "\\inputFile.txt");
 	static File outputFile = new File(appPath + "\\outputFile.txt");
 	static String[] header = { "B", "12/25/2019", "03:50", "", "", "" };
+
 	static Map<String, String> hm = new HashMap<String, String>();
 	public static final String NEW_LINE_SEPARATOR = "\r\n";
 	public static final String COMMA_DELIMITER = ",";
@@ -45,15 +49,18 @@ public class App {
 	public static final String CONSTANT_FORMS_DATA = "DID";
 	public static final String CONSTANT_PAPERWRK_TRAILER = "PWKZ";
 	public static final String CONSTANT_BATCH_TRAILER = "Z";
-
-	public static void main(String[] args) {
+	static SimpleDateFormat dateIn;
+	static SimpleDateFormat dateOut;
+	public static void main(String[] args) throws ParseException {
 		hm.put("45", "Breakfast$");
 		hm.put("43", "LaredoTaco$");
 		hm.put("46", "Roost$");
+	    dateIn = new SimpleDateFormat("yyyyMMdd");
+	    dateOut = new SimpleDateFormat("MM/dd/yyyy");
 		readFile(inputFile, outputFile);
 	}
 
-	private static void readFile(File inputFile, File outputFileName) {
+	private static void readFile(File inputFile, File outputFileName) throws ParseException {
 		CSVReader reader = null;
 		try {
 			FileWriter outputfile = new FileWriter(outputFileName);
@@ -76,8 +83,9 @@ public class App {
 			for (String distnicValues : location) {
 				int index = 0;
 				for (String[] data : inputData) {
+					String date = dateOut.format(dateIn.parse(data[0]));
 					if(index==0) {
-					String[] prefix = { CONSTANT_PAPERWRK_HEADER, distnicValues, data[0]};
+					String[] prefix = { CONSTANT_PAPERWRK_HEADER, distnicValues, date};
 					writer.writeNext(prefix);
 					}
 					index++;
@@ -85,11 +93,10 @@ public class App {
 						writer.writeNext(new String[] {CONSTANT_FORMS_DATA,CONSTANT_ZERO,CONSTANT_BLANK,hm.get(data[2]),data[3]});
 					}
 					if(index==inputData.size()) {
-						writer.writeNext(new String[]{ CONSTANT_PAPERWRK_TRAILER, distnicValues, data[0],CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ONE,CONSTANT_ZERO});
+						writer.writeNext(new String[]{ CONSTANT_PAPERWRK_TRAILER, distnicValues, date,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ZERO,CONSTANT_ONE,CONSTANT_ZERO});
 						writer.writeNext(new String[] {});
 						writer.writeNext(new String[] {});
 					}
-					
 				}
 			}
 			writer.writeNext(new String[] {"Z"});
