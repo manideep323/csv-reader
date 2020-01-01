@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.mani.exception.FileEmptyException;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
@@ -69,17 +70,20 @@ public class App {
 			writer.writeNext(header);
 			writer.writeNext(new String[] {});
 			writer.writeNext(new String[] {});
-
+			
 			reader = new CSVReader(new FileReader(inputFile));
 			String[] line;
 			reader.skip(1);
 			ArrayList<String[]> inputData = new ArrayList<String[]>();
 			TreeSet<String> location = new TreeSet<String>();
-			
+			String eachLine;
 			while ((line = reader.readNext()) != null) {
 				inputData.add(new String[] { line[0], line[1], line[2], line[3] });
+				eachLine=line[0]+line[1]+line[2]+line[3];
+				System.out.println(eachLine);
 				location.add(line[1]);
 			}
+			if(!inputData.isEmpty()) {
 			for (String distnicValues : location) {
 				int index = 0;
 				for (String[] data : inputData) {
@@ -98,6 +102,9 @@ public class App {
 						writer.writeNext(new String[] {});
 					}
 				}
+			}
+			}else {
+				throw new FileEmptyException("man pleas donot send empty file");
 			}
 			writer.writeNext(new String[] {"Z"});
 			writer.close();
